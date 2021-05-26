@@ -2,7 +2,8 @@
 Convert file format from intermediary json to X
 '''
 
-def doc_to_txt(file, word_sep=' ', line_sep='\n', block_sep='\n\n'):
+# TXT
+def doc_to_txt(file, word_sep=' ', line_sep='\n', block_sep='\n\n') -> str:
     text_page = []
     for block in file:
         text_line = []
@@ -14,7 +15,11 @@ def doc_to_txt(file, word_sep=' ', line_sep='\n', block_sep='\n\n'):
 
     text_page = block_sep.join(text_page)
 
+    return text_page
 
-def export_txt(file, outpath):
+
+def export_txt(file, outpath, file_sep='\n\n\n\n') -> None:
+    if file_sep:
+        file = file_sep.join(file)
     with open(outpath, 'w') as fout:
         fout.write(file)

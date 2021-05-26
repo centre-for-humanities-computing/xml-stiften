@@ -71,14 +71,16 @@ def bin_it(df_group, outdir, conversion_func=doc_to_txt, export_func=export_txt)
             # format page with selected parser
             file_ = conversion_func(file)
             # collect in a single object for exporting
-            group_output.append(file_)
+            # except for empties
+            if file_:
+                group_output.append(file_)
         
         # use name as fname
         group_start_date = name.strftime('%Y-%m-%d')
         fname = f'{group_start_date}_{name.freqstr}'
         outpath = os.path.join(outdir, fname)
         # export group output
-        export_func(file_, outpath)
+        export_func(group_output, outpath)
 
 
 
@@ -94,7 +96,10 @@ if __name__ == "__main__":
     intermediary_pattern = os.path.join(args['dataset'], '*', '*', '*', '*.ndjson')
     df_group = group_paths(intermediary_pattern, args['timebin'])
 
-    if args['format'] is 'txt':
+    if not os.path.exists(args['outdir']):
+        os.mkdir(args['outdir'])
+
+    if args['format'] == 'txt':
         bin_it(
             df_group=df_group,
             outdir=args['outdir'],
