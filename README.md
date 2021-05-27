@@ -1,6 +1,8 @@
 # Stiften Alto-XML Extractor #
-
-Description
+ 
+- extracting content from Alto-XML to intermediary json
+- concatenate documents in desired time bin
+- export as txt
 
 
 ## Prerequisites
@@ -26,7 +28,7 @@ $ source stiftenv/bin/activate
 Clone repository and install requirements.
 
 ```bash
-$ git clone https://github.com/centre-for-humanities-computing/newsFluxus.git
+$ git clone https://github.com/centre-for-humanities-computing/xml-stiften
 $ pip install -r requirements.txt
 ```
 
