@@ -20,9 +20,11 @@ from tqdm import tqdm
 
 def extract_line_content(line_content):
 
+    # in case of single word in a text line
     if isinstance(line_content, OrderedDict):
         text = [line_content['@CONTENT']]
 
+    # in case of multiple words in a text line
     elif isinstance(line_content, list):
         text = [obj['@CONTENT'] for obj in line_content]
     
@@ -32,6 +34,8 @@ def extract_line_content(line_content):
 def extract_block(block):
     block_text = []
 
+    # some text blocks don't have 'TextLine'
+    # in that case, empty list is returned
     if 'TextLine' in block:
         xml_text_lines = block['TextLine']
 
@@ -55,7 +59,9 @@ def extract_block(block):
 
 
 def block_to_json(block, fname):
-    '''Each text block must be a json object
+    '''
+    Each text block must be a json object,
+    so we can track metadata at the highest resolution possible.
     '''
 
     pattern_date = re.compile(r'\d{4}-\d{2}-\d{2}')
@@ -76,7 +82,9 @@ def block_to_json(block, fname):
 
 def parse_file(doc):
 
+    # filename is under this path in every document
     fname = doc['alto']['Description']['sourceImageInformation']['fileName']
+    # some documents don't have textblocks
     try:
         xml_text_blocks = doc['alto']['Layout']['Page']['PrintSpace']['TextBlock']
 
@@ -84,10 +92,12 @@ def parse_file(doc):
         if isinstance(xml_text_blocks, OrderedDict):
             xml_text_blocks = [xml_text_blocks]
 
+    # document will raise an error if no 'TextBlock'
     except KeyError:
         xml_text_blocks = None
 
     out = []
+    # don't work on empties
     if xml_text_blocks:
         for block in xml_text_blocks:
             out.append(block_to_json(block, fname))
