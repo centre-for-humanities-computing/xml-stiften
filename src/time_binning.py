@@ -77,7 +77,7 @@ def bin_it(df_group, outdir, conversion_func=doc_to_txt, export_func=export_txt)
         
         # use name as fname
         group_start_date = name.strftime('%Y-%m-%d')
-        fname = f'{group_start_date}_{name.freqstr}'
+        fname = f'{group_start_date}_{name.freqstr}.txt'
         outpath = os.path.join(outdir, fname)
         # export group output
         export_func(group_output, outpath)
