@@ -14,6 +14,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from conversions import doc_to_txt, export_txt
+from preprocessing import preprocess_file
 
 # %%
 def extract_date(fname):
@@ -56,7 +57,7 @@ def group_paths(intermediary_pattern, freq='D'):
 
 
 # %%
-def bin_it(df_group, outdir, conversion_func=doc_to_txt, export_func=export_txt):
+def bin_it(df_group, outdir, preprocessing=False, conversion_func=doc_to_txt, export_func=export_txt):
     '''
     '''
     for name, group in tqdm(df_group):
@@ -67,6 +68,10 @@ def bin_it(df_group, outdir, conversion_func=doc_to_txt, export_func=export_txt)
         for path in paths:
             with open(path) as fin:
                 file = ndjson.load(fin)
+
+            # preprocess if specified
+            if preprocessing:
+                file = preprocess_file(file)
 
             # format page with selected parser
             file_ = conversion_func(file)
@@ -90,6 +95,7 @@ if __name__ == "__main__":
     ap.add_argument("-o", "--outdir", required=True, help="path to directory to which files will be extracted")
     ap.add_argument("-f", "--format", required=False, type=str, default='txt', help="desired format")
     ap.add_argument('-t', '--timebin', required=False, type=str, default='D', help='time bins of this frequency')
+    ap.add_argument('-p', '--preprocessing', required=False, type=bool, default=False, help='preprocess?')
     args = vars(ap.parse_args())
 
     # intermediary_root = '/home/jan/Documents/_git/alto-tools/data/processed/json'
@@ -103,6 +109,7 @@ if __name__ == "__main__":
         bin_it(
             df_group=df_group,
             outdir=args['outdir'],
+            preprocessing=args['preprocessing'],
             conversion_func=doc_to_txt,
             export_func=export_txt
             )
