@@ -1,7 +1,10 @@
 '''
 Fitler out undersired characters & words
 '''
+# %%
 import re
+
+import ndjson
 
 
 class RegxFilter:
@@ -25,7 +28,7 @@ def load_stopwords(path='mdl/stopord.txt') -> set:
     return set(stopwords_)
 
 
-def clean_text_line(text_line, length_threshold=1, stopwords=None):
+def clean_text_line(text_line, length_threshold=1, lowercase=False, stopwords=None):
     '''Remove digits, special characters, excess whitespace & too short tokens
 
     Parameters
@@ -34,6 +37,8 @@ def clean_text_line(text_line, length_threshold=1, stopwords=None):
         one line of text (list of tokens)
     length_threshold : int, optional
         remove tokens shorter or equal to, by default 1
+    lowercase : bool
+        convert text to lowercase? By default False.
     stopwords : set
         set of words to filter out form the datasets. By default None
 
@@ -48,6 +53,9 @@ def clean_text_line(text_line, length_threshold=1, stopwords=None):
             token_ = RegxFilter(r"\d+").preprocess(token, sub=' ')
             token_ = RegxFilter(r"\W+").preprocess(token_, sub=' ')
             token_ = RegxFilter(r"\s+").preprocess(token_, sub='')
+
+            if lowercase:
+                token_ = token_.lower()
 
             if stopwords:
                 token_ = token_ if token_ not in stopwords else None
@@ -71,9 +79,8 @@ def preprocess_file(file, **kwargs):
     list of dict
         preprocessed file
     '''
-
     for block in file:
         block['content'] = [clean_text_line(
-            line) for line in block['content'] if clean_text_line(line, **kwargs)]
+            line, **kwargs) for line in block['content'] if clean_text_line(line, **kwargs)]
 
     return file

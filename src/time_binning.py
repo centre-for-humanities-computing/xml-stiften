@@ -123,6 +123,7 @@ def bin_txt_preprocessed(df_group, outdir) -> None:
     '''
     # fetch custom stopwords
     stopwords = load_stopwords()
+    assert len(stopwords) > 0
 
     # each group is a timebin
     for name, group in tqdm(df_group):
@@ -136,7 +137,11 @@ def bin_txt_preprocessed(df_group, outdir) -> None:
 
             # maximal preprocessing
             file_ = preprocess_file(
-                file, length_threshold=1, stopwords=stopwords)
+                file,
+                length_threshold=1,
+                lowercase=True,
+                stopwords=stopwords,
+                )
 
             # format page with selected parser
             file_ = doc_to_txt(file_, block_sep='\n')
