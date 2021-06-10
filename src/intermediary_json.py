@@ -27,7 +27,7 @@ def extract_line_content(line_content):
     # in case of multiple words in a text line
     elif isinstance(line_content, list):
         text = [obj['@CONTENT'] for obj in line_content]
-    
+
     return text
 
 
@@ -54,7 +54,7 @@ def extract_block(block):
                 text = extract_line_content(line_content)
                 line_text.append(text)
             block_text.extend(line_text)
-    
+
     return block_text
 
 
@@ -101,15 +101,15 @@ def parse_file(doc):
     if xml_text_blocks:
         for block in xml_text_blocks:
             out.append(block_to_json(block, fname))
-    
+
     return out
 
 
 def get_sessions_paths(parent_dir, absolute=True):
     subpaths_all = [d for d in os.listdir(parent_dir)]
-    subpaths_dir = [d for d in subpaths_all 
-            if os.path.isdir(os.path.join(parent_dir, d))]
-    
+    subpaths_dir = [d for d in subpaths_all
+                    if os.path.isdir(os.path.join(parent_dir, d))]
+
     if absolute:
         return [os.path.join(parent_dir, d) for d in subpaths_dir]
     else:
@@ -124,7 +124,7 @@ def get_subsession_paths(parent_dir, absolute=True):
     ----------
     parent_dir : str
         Path to a Session directory
-    
+
     absolute : bool, optional
         Return absolute paths or folder names?
         By default True.
@@ -135,8 +135,8 @@ def get_subsession_paths(parent_dir, absolute=True):
         (absolute paths to | names of) subsession dirs
     '''
     subpaths_all = [d for d in os.listdir(parent_dir)]
-    subpaths_dir = [d for d in subpaths_all 
-                if os.path.isdir(os.path.join(parent_dir, d))]
+    subpaths_dir = [d for d in subpaths_all
+                    if os.path.isdir(os.path.join(parent_dir, d))]
 
     subpaths_ocr = [d for d in subpaths_dir if len(d) == 15]
 
@@ -165,11 +165,12 @@ def get_dailydir_paths(parent_dir, absolute=True):
         (absolute paths to | names of) daily dirs
     '''
     subpaths_all = [d for d in os.listdir(parent_dir)]
-    subpaths_dir = [d for d in subpaths_all 
-                if os.path.isdir(os.path.join(parent_dir, d))]
-    
+    subpaths_dir = [d for d in subpaths_all
+                    if os.path.isdir(os.path.join(parent_dir, d))]
+
     pattern_dailydir = re.compile(r'\d{4}-\d{2}-\d{2}.*')
-    subpaths_dailydir = [d for d in subpaths_dir if re.match(pattern_dailydir, d)]
+    subpaths_dailydir = [
+        d for d in subpaths_dir if re.match(pattern_dailydir, d)]
 
     if absolute:
         return [os.path.join(parent_dir, d) for d in subpaths_dailydir]
@@ -178,7 +179,8 @@ def get_dailydir_paths(parent_dir, absolute=True):
 
 
 def get_xml_paths(parent_dir, absolute=True):
-    subpaths_xml = [f for f in os.listdir(parent_dir) if f.endswith('.alto.xml')]
+    subpaths_xml = [f for f in os.listdir(
+        parent_dir) if f.endswith('.alto.xml')]
 
     if absolute:
         return [os.path.join(parent_dir, d) for d in subpaths_xml]
@@ -197,20 +199,23 @@ def make_folder_structure(dataset_root, target_dir):
         subsessions = get_subsession_paths(session)
         print(f'session {i} of out {len(sessions)}')
         for i, subsession in enumerate(subsessions):
-            out_subsession = os.path.join(out_session, os.path.basename(subsession))
+            out_subsession = os.path.join(
+                out_session, os.path.basename(subsession))
             os.mkdir(out_subsession)
 
             dailydirs = get_dailydir_paths(subsession)
             print(f'subsession {i} of out {len(subsessions)}')
             for dailydir in tqdm(dailydirs):
-                out_dailydir = os.path.join(out_subsession, os.path.basename(dailydir))
+                out_dailydir = os.path.join(
+                    out_subsession, os.path.basename(dailydir))
                 os.mkdir(out_dailydir)
 
                 xml_paths = get_xml_paths(dailydir)
                 for file in xml_paths:
                     out_xml = os.path.join(
-                        out_dailydir, os.path.basename(file).replace('.alto.xml', '.ndjson')
-                        )
+                        out_dailydir, os.path.basename(
+                            file).replace('.alto.xml', '.ndjson')
+                    )
 
                     with open(file) as fin:
                         doc = xmltodict.parse(fin.read())
@@ -222,11 +227,14 @@ def make_folder_structure(dataset_root, target_dir):
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(description="Extract Stiften with desired properities")
-    ap.add_argument("-d", "--dataset", required=True, help="root directory of stiften datasets (e.g. stiftstidende/1932-46/)")
-    ap.add_argument("-o", "--outdir", required=True, help="target dir where intermediary json files are going to get dumped")
+    ap = argparse.ArgumentParser(
+        description="Extract Stiften with desired properities")
+    ap.add_argument("-d", "--dataset", required=True,
+                    help="root directory of stiften datasets (e.g. stiftstidende/1932-46/)")
+    ap.add_argument("-o", "--outdir", required=True,
+                    help="target dir where intermediary json files are going to get dumped")
     args = vars(ap.parse_args())
-    
+
     make_folder_structure(
         dataset_root=args['dataset'],
         target_dir=args['outdir']

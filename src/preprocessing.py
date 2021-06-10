@@ -17,9 +17,10 @@ def load_stopwords(path='mdl/stopord.txt') -> set:
     '''
     with open(path, encoding='utf-8') as fin:
         stopwords = fin.readlines()
-    
+
     # get rid of newline characters
-    stopwords_ = [RegxFilter(r"\n").preprocess(token, sub='') for token in stopwords]
+    stopwords_ = [RegxFilter(r"\n").preprocess(token, sub='')
+                  for token in stopwords]
 
     return set(stopwords_)
 
@@ -76,5 +77,3 @@ def preprocess_file(file, **kwargs):
             line) for line in block['content'] if clean_text_line(line, **kwargs)]
 
     return file
-
-# %%

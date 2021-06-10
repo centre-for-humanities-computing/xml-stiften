@@ -44,7 +44,6 @@ def extract_simple_fname(group_name) -> str:
             f'Timestamp frequency not recognized ({group_name.freq})')
 
 
-
 def group_paths(intermediary_pattern, freq='D'):
     '''Get a mapping of what filepaths are in the same timebin
 
@@ -136,7 +135,8 @@ def bin_txt_preprocessed(df_group, outdir) -> None:
                 file = ndjson.load(fin)
 
             # maximal preprocessing
-            file_ = preprocess_file(file, length_threshold=1, stopwords=stopwords)
+            file_ = preprocess_file(
+                file, length_threshold=1, stopwords=stopwords)
 
             # format page with selected parser
             file_ = doc_to_txt(file_, block_sep='\n')
@@ -151,38 +151,6 @@ def bin_txt_preprocessed(df_group, outdir) -> None:
         outpath = os.path.join(outdir, fname)
         # export group output
         export_txt(group_output, outpath, file_sep='\n')
-
-
-# def get_bins_agnostic(df_group, outdir, preprocessing=False,
-#            conversion_func=doc_to_txt, export_func=export_txt):
-#     '''
-#     '''
-#     for name, group in tqdm(df_group):
-#         group_output = []
-
-#         # iterate thourgh paths in that group
-#         paths = [path for path in group['path']]
-#         for path in paths:
-#             with open(path) as fin:
-#                 file = ndjson.load(fin)
-
-#             # preprocess if specified
-#             if preprocessing:
-#                 file = preprocess_file(file)
-
-#             # format page with selected parser
-#             file_ = conversion_func(file)
-#             # collect in a single object for exporting
-#             # except for empties
-#             if file_:
-#                 group_output.append(file_)
-
-#         # use name as fname
-#         group_start_date = name.strftime('%Y-%m-%d')
-#         fname = f'{group_start_date}_{name.freqstr}.txt'
-#         outpath = os.path.join(outdir, fname)
-#         # export group output
-#         export_func(group_output, outpath)
 
 
 if __name__ == "__main__":
@@ -210,15 +178,12 @@ if __name__ == "__main__":
 
     if args['preprocessing']:
         bin_txt_preprocessed(
-            df_group=df_group, 
+            df_group=df_group,
             outdir=args['outdir']
         )
 
     else:
         bin_txt_readable(
-            df_group=df_group, 
+            df_group=df_group,
             outdir=args['outdir']
         )
-
-# %%
-# %%
