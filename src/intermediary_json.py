@@ -16,6 +16,7 @@ from collections import OrderedDict
 import ndjson
 import xmltodict
 from tqdm import tqdm
+from wasabi import msg
 
 
 def extract_line_content(line_content):
@@ -110,6 +111,9 @@ def get_sessions_paths(parent_dir, absolute=True):
     subpaths_dir = [d for d in subpaths_all
                     if os.path.isdir(os.path.join(parent_dir, d))]
 
+    # check: validate basepath is 17 characters
+    subpaths_dir = [d for d in subpaths_dir if len(d) == 17]
+
     if absolute:
         return [os.path.join(parent_dir, d) for d in subpaths_dir]
     else:
@@ -138,6 +142,7 @@ def get_subsession_paths(parent_dir, absolute=True):
     subpaths_dir = [d for d in subpaths_all
                     if os.path.isdir(os.path.join(parent_dir, d))]
 
+    # check: validate basepath is 15 characters
     subpaths_ocr = [d for d in subpaths_dir if len(d) == 15]
 
     if absolute:
@@ -189,7 +194,9 @@ def get_xml_paths(parent_dir, absolute=True):
 
 
 def make_folder_structure(dataset_root, target_dir):
-    os.mkdir(target_dir)
+
+    if not os.path.exists(target_dir):
+        os.mkdir(target_dir)
 
     sessions = get_sessions_paths(dataset_root)
     for i, session in enumerate(sessions):
@@ -235,7 +242,11 @@ if __name__ == "__main__":
                     help="target dir where intermediary json files are going to get dumped")
     args = vars(ap.parse_args())
 
+    msg.info(f"Starting intermediary json creation with output directory: {args['outdir']}")
+
     make_folder_structure(
         dataset_root=args['dataset'],
         target_dir=args['outdir']
     )
+
+    msg.good('Job completed: intermediary_json.py')

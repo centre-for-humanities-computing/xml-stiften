@@ -12,6 +12,7 @@ import argparse
 import ndjson
 import pandas as pd
 from tqdm import tqdm
+from wasabi import msg
 
 from conversions import doc_to_txt, export_txt
 from preprocessing import preprocess_file, load_stopwords
@@ -181,7 +182,10 @@ if __name__ == "__main__":
     if not os.path.exists(args['outdir']):
         os.mkdir(args['outdir'])
 
+    msg.info(f"Starting time binning creation with output directory: {args['outdir']}")
+
     if args['preprocessing']:
+        msg.info('Preprocessing enabled')
         bin_txt_preprocessed(
             df_group=df_group,
             outdir=args['outdir']
@@ -192,3 +196,5 @@ if __name__ == "__main__":
             df_group=df_group,
             outdir=args['outdir']
         )
+    
+    msg.good('Job completed: time binning')
