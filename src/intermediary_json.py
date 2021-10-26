@@ -198,7 +198,12 @@ def make_folder_structure(dataset_root, target_dir):
     if not os.path.exists(target_dir):
         os.mkdir(target_dir)
 
-    sessions = get_sessions_paths(dataset_root)
+    existing_names_dataset = get_sessions_paths(dataset_root, absolute=False)
+    existing_names_target = get_sessions_paths(target_dir, absolute=False)
+
+    sessions = set(existing_names_dataset) - set(existing_names_target)
+    sessions = [os.path.join(dataset_root, d) for d in sessions]
+
     for i, session in enumerate(sessions):
         out_session = os.path.join(target_dir, os.path.basename(session))
         os.mkdir(out_session)
